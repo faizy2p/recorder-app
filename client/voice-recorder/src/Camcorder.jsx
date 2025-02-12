@@ -19,6 +19,7 @@ const Camcorder = () => {
   // Start recording
   const startRecording = async () => {
     try {
+      setRecordedChunks([])
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       videoRef.current.srcObject = stream;
       mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: 'video/webm' });
@@ -105,6 +106,8 @@ const Camcorder = () => {
           const response = await axios.delete(`${baseURL}/deleteVideo/${filename}`);
           console.log('File deleted:', response.data);
           setRecordings(()=>recordings.filter((recording) => recording.filename !== filename));
+          if(currentVideo == `${baseURL}/video-uploads/${filename}`)
+            setCurrentVideo('');
         } catch (error) {
           console.error('Error deleting file:', error);
         }

@@ -17,6 +17,14 @@ const port=8080;
 const connection_string="mongodb://localhost:27017/voice-recorder";
 
 //expose uploads folder
+var dirAudio = './uploads';
+var dirVideo = './video-uploads';
+if (!fs.existsSync(dirAudio)){
+    fs.mkdirSync(dirAudio);
+}
+if (!fs.existsSync(dirVideo)){
+  fs.mkdirSync(dirVideo);
+}
 app.use('/uploads',express.static(path.join(__dirname,'uploads')));
 app.use('/video-uploads',express.static(path.join(__dirname,'video-uploads')));
 
