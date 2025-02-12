@@ -1,0 +1,21 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "client": "npm run dev --prefix client/voice-recorder",
+    "server": "npm run server --prefix server",
+    "npm-i-client": "npm i --prefix client && npm i --prefix client/voice-recorder",
+    "npm-i-server": "npm i --prefix server",
+    "install-app-dependencies": "concurrently \"npm i\" \"npm run npm-i-client\" \"npm run npm-i-server\"",
+    "start-app": "concurrently \"npm run client\" \"npm run server\""
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "type": "module"
+}
