@@ -8,7 +8,7 @@
     "server": "npm run server --prefix server",
     "npm-i-client": "npm i --prefix client && npm i --prefix client/voice-recorder",
     "npm-i-server": "npm i --prefix server",
-    "install-app-dependencies": "concurrently \"npm i\" \"npm run npm-i-client\" \"npm run npm-i-server\"",
+    "install-app-dependencies": "npm i && concurrently \"npm run npm-i-client\" \"npm run npm-i-server\"",
     "start-app": "concurrently \"npm run client\" \"npm run server\""
   },
   "author": "",

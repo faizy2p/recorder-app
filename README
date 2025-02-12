@@ -1,5 +1,4 @@
 #start the mongoDB instance
 #change port and connection_string variable
-#RUN 'node index.js' from '/server'
-#RUN 'npm run dev' from 'client/voice-recorder'
-**make sure to remove file metadata from db instance while removal of files/videos from directory**
+#RUN "npm run install-app-dependencies"
+#RUN "npm run start-app"
