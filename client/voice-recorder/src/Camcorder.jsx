@@ -1,21 +1,26 @@
 import React, { useRef, useState,useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
+import ReactPlayer from 'react-player';
+import { Toaster, toast } from 'react-hot-toast';
 
 const Camcorder = () => {
   const videoRef = useRef(null);
   const [currentVideo, setCurrentVideo] = useState('');
   const [closePlayback, setClosePlayback] = useState(false);
-  const videoplayRef = useRef(null);
+  const playerRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
   const [recordedChunks, setRecordedChunks] = useState([]);
   const [getRecordsClicked, setGetRecordsClicked] = useState(false);
   const [recordings, setRecordings] = useState([]);
+  const [isSeeking, setIsSeeking] = useState(false);
+
 
   //********set base URL********
   const baseURL="http://localhost:8080";
 
+ 
   // Start recording
   const startRecording = async () => {
     try {
@@ -57,13 +62,18 @@ const Camcorder = () => {
     formData.append('video', blob, 'recording.webm');
 
     try {
-        const response = await axios.post(`${baseURL}/video-upload`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        const response = await axios.post(`${baseURL}/video-upload/${sessionStorage.getItem('sessionId')}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data',
+          'sessionId': sessionStorage.getItem('sessionId'),
+         }, 
       });
+      console.log("sess:", sessionStorage.getItem('sessionId'));
       console.log("File uploaded:", response.data);
+      toast.success('Video uploaded successfully!');
       fetchRecordings();
     } catch (err) {
       console.error('Error uploading video:', err);
+      toast.error('Error uploading video!');
     }
   };
 
@@ -73,7 +83,9 @@ const Camcorder = () => {
     };
 
   useEffect(() => {
+    if (getRecordsClicked) {
           fetchRecordings();
+        }
         }, [getRecordsClicked]);
 
   // Get all recordings
@@ -91,11 +103,11 @@ const Camcorder = () => {
         setCurrentVideo(`${baseURL}/video-uploads/${file}`);
     };
 
-    useEffect(() => {
-        if (videoplayRef.current && currentVideo) {
-            videoplayRef.current.src = currentVideo;
-        }
-    }, [currentVideo]);
+    // useEffect(() => {
+    //     if (videoplayRef.current && currentVideo) {
+    //         videoplayRef.current.src = currentVideo;
+    //     }
+    // }, [currentVideo]);
 
     const closePlaybackEvent = () => {
         setClosePlayback(()=>!closePlayback);
@@ -105,6 +117,7 @@ const Camcorder = () => {
         try {
           const response = await axios.delete(`${baseURL}/deleteVideo/${filename}`);
           console.log('File deleted:', response.data);
+          toast.success('File deleted successfully!');
           setRecordings(()=>recordings.filter((recording) => recording.filename !== filename));
           if(currentVideo == `${baseURL}/video-uploads/${filename}`)
             setCurrentVideo('');
@@ -112,6 +125,35 @@ const Camcorder = () => {
           console.error('Error deleting file:', error);
         }
         };
+
+        const fastForward = async () => {
+          if (playerRef.current) {
+            setIsSeeking(true);
+            playerRef.current.seekTo(playerRef.current.getCurrentTime() + 10, 'seconds');
+            setIsSeeking(false);
+          }
+        };
+      
+        const fastBackward = async () => {
+          if (playerRef.current) {
+            setIsSeeking(true);
+            await playerRef.current.seekTo(playerRef.current.getCurrentTime() + 10, 'seconds');
+            setIsSeeking(false);
+          }
+        };
+
+        // const handleDoubleClick = (e) => {
+        //   e.stopPropagation();
+        //   e.preventDefault();
+        //   const playerWidth = playerRef.current.wrapper.clientWidth;
+        //   const clickPositionX = e.clientX;
+            
+        //   if (clickPositionX < playerWidth / 2) {
+        //     fastBackward();
+        //   } else {
+        //     fastForward();
+        //   }
+        // };
 
 return (
     <div>
@@ -144,15 +186,12 @@ return (
         </ul>
         {currentVideo ? (
             <>
-                <div>
-                    <video
-                        ref={videoplayRef}
-                        controls
-                        width="320"
-                        height="240"
-                        style={{ borderRadius: '10px', border: '2px solid white' }}
-                    ></video>
-                </div>
+            <div className="player-wrapper">
+            <ReactPlayer ref={playerRef} url={currentVideo} controls className="react-player" />
+            <button onClick={fastBackward} className="overlay-button rewind-button">Rewind 10s</button>
+            <button onClick={fastForward} className="overlay-button forward-button">Forward 10s</button>
+            {isSeeking && <div className="loading-overlay">seeking..</div>}
+          </div>
             </>
         ) : null}
 
@@ -164,7 +203,7 @@ return (
                 muted
                 width="320"
                 height="240"
-                style={{ borderRadius: '10px', border: '2px solid white' }}
+                className="video-player-container"
             ></video>
         }
         <div>
@@ -177,6 +216,7 @@ return (
                 Upload Video
             </button>
         </div>
+    
     </div>
 );
 };

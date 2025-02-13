@@ -6,15 +6,36 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import session from 'express-session';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app=express();
+
 app.use(cors());
 
 const port=8080;
 const connection_string="mongodb://localhost:27017/voice-recorder";
+
+//create session
+app.use(session({
+    secret: 'top-secret-key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }
+}));
+
+//endpoint to generate session
+app.get('/session', (req, res) => {
+  const sessionId1 = req.sessionID;
+  req.session.sessionId = sessionId1;
+  req.session.userId = sessionId1;
+  res.json({ sessionId: sessionId1 });
+  //console.log('Session ID:', sessionId1);
+  //console.log('req sess:'+req.session.userId);
+  //console.log('req-og sess:'+req.session.userId);
+});
 
 //expose uploads folder
 var dirAudio = './uploads';
@@ -61,11 +82,13 @@ mongoose.connect(connection_string);
 const recordingSchema = new mongoose.Schema({
   filename: String,
   path: String,
+  sessionID: String,
 });
 
 const recordingSchemaV = new mongoose.Schema({
   filename: String,
   path: String,
+  sessionID: String,
 });
 
 //schema for voice recording
@@ -94,12 +117,16 @@ app.get("/getAll", async (req, res) => {
   }
 });
 // Upload endpoint
-app.post("/upload", upload.single("file"), async (req, res) => {
+app.post("/upload/:sessionid", upload.single("file"), async (req, res) => {
   try {
+    const sessionIdUrl = req.params.sessionid;
     const newRecording = new Recording({
       filename: req.file.filename,
       path: req.file.path,
+      sessionID: req.headers.sessionid,
     });
+    //console.log("req sess:"+req.headers.sessionid);
+    //console.log("saved sess:"+req.session.userId);
     await newRecording.save();
     res.status(200).json({ message: "File uploaded successfully!" });
   } catch (error) {
@@ -126,13 +153,18 @@ const video_upload = multer({ storage:video_storage });
 // }
 
 // Endpoint to handle video uploads
-app.post('/video-upload', video_upload.single('video'), async(req, res) => {
+app.post('/video-upload/:sessionid', video_upload.single('video'), async(req, res) => {
   try {
     console.log('Video upload hit');
+    //as param
+    //sessionIdUrl = req.params.sessionid;
     const newRecordingV = new Video({
       filename: req.file.filename,
       path: req.file.path,
+      //also as header
+      sessionID: req.headers.sessionid,
     });
+    //console.log(req.headers.sessionid);
     await newRecordingV.save();
     res.status(200).json({ message: "video uploaded successfully!"+req.file.filename });
   } catch (error) {

@@ -17,5 +17,10 @@
   "devDependencies": {
     "concurrently": "^9.1.2"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "express-session": "^1.18.1",
+    "react-hot-toast": "^2.5.1",
+    "react-player": "^2.16.0"
+  }
 }
