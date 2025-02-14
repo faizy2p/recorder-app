@@ -9,13 +9,17 @@
     "npm-i-client": "npm i --prefix client && npm i --prefix client/voice-recorder",
     "npm-i-server": "npm i --prefix server",
     "install-app-dependencies": "npm i && concurrently \"npm run npm-i-client\" \"npm run npm-i-server\"",
-    "start-app": "concurrently \"npm run client\" \"npm run server\""
+    "start-app": "concurrently \"npm run client\" \"npm run server\"",
+    "remove-nodemodules-client": "npm run remove-nodemodules --prefix client",
+    "remove-nodemodules-server": "npm run remove-nodemodules --prefix server",
+    "remove-nodemodules": "concurrently \"rimraf node_modules\" \"npm run remove-nodemodules-client\" \"npm run remove-nodemodules-server\""
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "rimraf": "^5.0.10"
   },
   "type": "module",
   "dependencies": {

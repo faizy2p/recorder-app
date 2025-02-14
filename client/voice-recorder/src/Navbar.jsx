@@ -10,7 +10,7 @@ const Navbar = () => {
             <NavLink to="/">Voice Recorder</NavLink>
         </button>
         <button className="margin-30 border-white">
-            <NavLink to="/camcorder">Cam corder</NavLink>
+            <NavLink to="/camcorder">Video Recorder</NavLink>
         </button>
         </nav>
     );

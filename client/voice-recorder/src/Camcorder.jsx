@@ -99,8 +99,10 @@ const Camcorder = () => {
     };
 
     // Handle click on a video file
-    const handleVideoClick = (file) => {
-        setCurrentVideo(`${baseURL}/video-uploads/${file}`);
+    const handleVideoClick = (path) => {
+      const url = `${baseURL}/${path}`;
+      console.log(url)
+        setCurrentVideo(url);
     };
 
     // useEffect(() => {
@@ -119,7 +121,7 @@ const Camcorder = () => {
           console.log('File deleted:', response.data);
           toast.success('File deleted successfully!');
           setRecordings(()=>recordings.filter((recording) => recording.filename !== filename));
-          if(currentVideo == `${baseURL}/video-uploads/${filename}`)
+          if(currentVideo == `${baseURL}/video-uploads/${sessionStorage.getItem('sessionId')}/${filename}`)
             setCurrentVideo('');
         } catch (error) {
           console.error('Error deleting file:', error);
@@ -137,7 +139,7 @@ const Camcorder = () => {
         const fastBackward = async () => {
           if (playerRef.current) {
             setIsSeeking(true);
-            await playerRef.current.seekTo(playerRef.current.getCurrentTime() + 10, 'seconds');
+            await playerRef.current.seekTo(playerRef.current.getCurrentTime() - 10, 'seconds');
             setIsSeeking(false);
           }
         };
@@ -166,7 +168,7 @@ return (
                         key={recording._id}
                         onClick={(e) => {
                             if (e.target.tagName !== 'BUTTON') {
-                                handleVideoClick(recording.filename);
+                                handleVideoClick(recording.path);
                             }
                         }}
                     >
@@ -195,7 +197,7 @@ return (
             </>
         ) : null}
 
-        <h1>Camcorder</h1>
+        <h1>Video Recorder</h1>
         {
             <video
                 ref={videoRef}

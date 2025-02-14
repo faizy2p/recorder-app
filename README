@@ -1,4 +1,5 @@
-#start the mongoDB instance
-#change port and connection_string variable
-#RUN "npm run install-app-dependencies"
-#RUN "npm run start-app"
+#start the mongoDB instance using running command "mongod"
+#change port and connection_string variable if needed
+#RUN "npm run install-app-dependencies" for installing all nested app dependencies
+#RUN "npm run start-app" for starting the local app
+#RUN "npm run remove-nodemodules" for deleting all nested node_modules

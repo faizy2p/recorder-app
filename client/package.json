@@ -3,5 +3,11 @@
     "react-audio-recorder": "^2.2.0",
     "react-mic": "^12.4.6",
     "server": "file:.."
+  },
+  "scripts": {
+    "remove-nodemodules": "rimraf node_modules"
+  },
+  "devDependencies": {
+    "rimraf": "^5.0.10"
   }
 }

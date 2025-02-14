@@ -38,8 +38,8 @@ const Recorder = () => {
   };
 
    // Handle click on an audio file
-   const handleAudioClick = (file) => {
-    setCurrentAudio(`${baseURL}/uploads/${file}`);
+   const handleAudioClick = (path) => {
+    setCurrentAudio(`${baseURL}/${path}`);
     };
 
     useEffect(() => {
@@ -61,6 +61,8 @@ const Recorder = () => {
       console.log('File deleted:', response.data);
       toast.success('File deleted successfully!');
       setRecordings(()=>recordings.filter((recording) => recording.filename !== filename));
+      if(currentAudio == `${baseURL}/uploads/${sessionStorage.getItem('sessionId')}/${filename}`)
+        setCurrentAudio('');
     } catch (error) {
       console.error('Error deleting file:', error);
       toast.error('Error deleting file!');
@@ -95,7 +97,7 @@ const Recorder = () => {
       <ul className="audio-list">
         { getRecordsClicked && (recordings.length > 0) ? (recordings.map((recording) => (
           <li className="audio-item-bullet"
-            key={recording._id} onClick={() => handleAudioClick(recording.filename)}>
+            key={recording._id} onClick={() => handleAudioClick(recording.path)}>
             {recording.filename}
             <button className="margin-30" onClick={()=>deleteRecord(recording.filename)}>delete</button>
           </li>)
