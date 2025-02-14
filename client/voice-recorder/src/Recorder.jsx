@@ -2,6 +2,7 @@ import React, { useState,useEffect } from "react";
 import { ReactMic } from "react-mic";
 import axios from "axios";
 import './App.css';
+import { Toaster, toast } from 'react-hot-toast';
 
 const Recorder = () => {
   const [isRecording, setIsRecording] = useState(false);
@@ -15,6 +16,7 @@ const Recorder = () => {
   const baseURL="http://localhost:8080";
   
   const startRecording = () => {
+    setAudioBlob(null);
     setIsRecording(true);
   };
 
@@ -57,9 +59,11 @@ const Recorder = () => {
     try {
       const response = await axios.delete(`${baseURL}/delete/${filename}`);
       console.log('File deleted:', response.data);
+      toast.success('File deleted successfully!');
       setRecordings(()=>recordings.filter((recording) => recording.filename !== filename));
     } catch (error) {
       console.error('Error deleting file:', error);
+      toast.error('Error deleting file!');
     }
   };
 
@@ -68,33 +72,39 @@ const Recorder = () => {
     formData.append("file", audioBlob.blob, "recording.mp3");
 
     try {
-      const response = await axios.post(`${baseURL}/upload`, formData, {
+      const response = await axios.post(`${baseURL}/upload/${sessionStorage.getItem('sessionId')}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          "sessionId": sessionStorage.getItem('sessionId'),
         },
       });
+      console.log("sess:", sessionStorage.getItem('sessionId'));
       console.log("File uploaded:", response.data);
+      toast.success('Audio uploaded successfully!');
       fetchRecordings();
     } catch (error) {
       console.error("Error uploading file:", error);
+      toast.error('Error uploading audio!');
     }
   };
 
 
   return (
     <div style={{ width: '100%', height: '100%' }}>
-        
-            <button onClick={ getRecordsClickedEvent } className="margin-top-30" >records</button>
-            <ul className="audio-list">
-            { getRecordsClicked && (recordings.length > 0) ? (recordings.map((recording) => (
-                <li className="audio-item-bullet"
-       key={recording._id} onClick={() => handleAudioClick(recording.filename)}>{recording.filename}<button className="margin-30" onClick={()=>deleteRecord(recording.filename)}>delete</button></li>)
-            ) ): null
-            }
-            </ul>
-            <br/>
+      <button onClick={ getRecordsClickedEvent } className="margin-top-30" >records</button>
+      <ul className="audio-list">
+        { getRecordsClicked && (recordings.length > 0) ? (recordings.map((recording) => (
+          <li className="audio-item-bullet"
+            key={recording._id} onClick={() => handleAudioClick(recording.filename)}>
+            {recording.filename}
+            <button className="margin-30" onClick={()=>deleteRecord(recording.filename)}>delete</button>
+          </li>)
+        ) ): null
+        }
+      </ul>
+      <br/>
 
-            {currentAudio && (
+      {currentAudio && (
         <div className="margin-top-30">
           <h3>Now Playing:</h3>
           <audio controls key={currentAudio}>
@@ -105,14 +115,15 @@ const Recorder = () => {
       )}
 
       <h1>Voice notes</h1>
-      <div>
+      <div className="canvas-audio" >
         <ReactMic
-        visualSetting="sinewave"
-        record={isRecording}
-        onStop={onStop}
-        onData={onData}
-        mimeType="audio/mp3"
-      />
+          visualSetting="sinewave"
+          record={isRecording}
+          onStop={onStop}
+          onData={onData}
+          mimeType="audio/mp3"
+          className="react-mic"
+        />
       </div>
       <button onClick={startRecording} disabled={isRecording} className='margin-10' >
         Start Recording
@@ -120,9 +131,8 @@ const Recorder = () => {
       <button onClick={stopRecording} disabled={!isRecording} className='margin-10' >
         Stop Recording
       </button>
-      <button onClick={saveRecording} disabled={!audioBlob} className='margin-10' >
-        Save Recording
-      </button>
+      <button onClick={saveRecording} disabled={!audioBlob} className='margin-10' >Save Recording</button>
+      
     </div>
   );
 };
