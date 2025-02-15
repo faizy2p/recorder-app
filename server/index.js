@@ -59,7 +59,7 @@ app.delete('/delete/:filename', async (req, res) => {
   try {
     const filename = req.params.filename;
     const result = await Recording.deleteOne({ filename: filename });
-    fs.unlink(`uploads/${filename}`, (err) => {
+    fs.unlink(`uploads/${req.headers.sessionid}/${filename}`, (err) => {
       if (err) {
         console.error('Error deleting file:', err);
         return;
@@ -191,7 +191,7 @@ app.delete('/deleteVideo/:filename', async (req, res) => {
   try {
     const filename = req.params.filename;
     const result = await Video.deleteOne({ filename: filename });
-    fs.unlink(`video-uploads/${filename}`, (err) => {
+    fs.unlink(`video-uploads/${req.headers.sessionid}/${filename}`, (err) => {
       if (err) {
         console.error('Error deleting file:', err);
         return;
