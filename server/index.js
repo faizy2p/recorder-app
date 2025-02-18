@@ -42,6 +42,12 @@ function createUploadFolders(sessionId1) {
   var dirAudio = `./uploads/${sessionId1}`;
   var dirVideo = `./video-uploads/${sessionId1}`;
   //Create uploads folder if not existing
+  if (!fs.existsSync('./uploads')) {
+    fs.mkdirSync('./uploads');
+  }
+  if (!fs.existsSync('./video-uploads')) {
+    fs.mkdirSync('./video-uploads');
+  }
   if (!fs.existsSync(dirAudio)) {
     fs.mkdirSync(dirAudio);
   }

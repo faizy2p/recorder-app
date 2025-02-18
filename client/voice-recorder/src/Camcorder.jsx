@@ -21,10 +21,10 @@ const Camcorder = () => {
   // Start recording
   const startRecording = async () => {
     try {
-      setRecordedChunks([])
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      setRecordedChunks([]);
+      const stream = await navigator.mediaDevices.getUserMedia({ video:{frameRate:15} , audio: true});
       videoRef.current.srcObject = stream;
-      mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: 'video/webm' });
+      mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: 'video/webm; codecs=vp9', bitsPerSecond: 500000 });
 
       mediaRecorderRef.current.ondataavailable = (event) => {
         if (event.data.size > 0) {

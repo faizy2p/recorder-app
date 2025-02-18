@@ -3,6 +3,8 @@ import { useEffect, useState, useRef } from "react";
 import './App.css';
 import axios from "axios";
 import ReactPlayer from 'react-player';
+import { Player, ControlBar, BigPlayButton, PlaybackRateMenuButton } from "video-react";
+import 'video-react/dist/video-react.css';
 import Button from 'react-bootstrap/Button';
 import { Video } from 'react-feather';
 import { Toaster, toast } from 'react-hot-toast';
@@ -72,6 +74,7 @@ const VideoRecords = () => {
             setIsSeeking(false);
         }
     };
+
     return (
         <div className="row">
             <div className="col">
@@ -89,7 +92,7 @@ const VideoRecords = () => {
                             >
                                 <Row className="w-100">
                                     <Col lg={8} className="col-12">
-                                        <span className="me-2"><Video color="red" size={32} /></span> {recording.filename}{recording.filename}
+                                        <span className="me-2"><Video color="red" size={32} /></span> {recording.filename}
                                     </Col>
                                     <Col lg={4} className="col-12 mt-2 mt-lg-0 col-lg-4">
                                         <Button className="margin-30" variant="danger" onClick={(e) => {
@@ -108,13 +111,22 @@ const VideoRecords = () => {
                 </ul>
                 {currentVideo ? (
                     <>
-                        <div className="player-wrapper position-relative">
-                            <ReactPlayer ref={playerRef} url={currentVideo} controls className="react-player" />
+                        {/* <div className={`player-wrapper position-relative`}> */}
+                            {/* <ReactPlayer ref={playerRef} url={currentVideo} controls className={`react-player`} />
                             <button onClick={fastBackward} className="overlay-button rewind-button">Rewind 10s</button>
                             <button onClick={fastForward} className="overlay-button forward-button">Forward 10s</button>
-                            <Button className="close-btn-player" variant="danger" onClick={() => setCurrentVideo('')}>Close</Button>
-                            {isSeeking && <div className="loading-overlay">seeking..</div>}
-                        </div>
+                            <Button className="close-btn-player" variant="danger" onClick={() => setCurrentVideo('')}>Close</Button> */}
+                            <Player
+                                src={currentVideo}
+                                playsInline>
+                                    <BigPlayButton position="center" />
+                                    
+                                    <ControlBar autohide={false}>
+                                        <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.25]} order={7.1} />
+                                        {/* <Button className="close-btn-player" variant="danger" onClick={() => setCurrentVideo('')}>Close</Button> */}
+
+                                    </ControlBar>
+                                </Player>
                     </>
                 ) : null}
             </div>
