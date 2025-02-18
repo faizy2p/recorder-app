@@ -43,9 +43,9 @@ function App() {
 
   return (
     <>
-      <div class="container">
-        <div class="row">
-          <div class="col">
+      <div className="container">
+        <div className="row">
+          <div className="col">
             <Navbar />
             <Routes>
               {sessionId !== '' && <Route path="/" element={<Recorder />} />}
