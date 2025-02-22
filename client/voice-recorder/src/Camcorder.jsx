@@ -6,6 +6,7 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import { userAgentName } from './utils';
 
 const Camcorder = () => {
   const videoRef = useRef(null);
@@ -24,7 +25,10 @@ const Camcorder = () => {
       setRecordedChunks([]);
       const stream = await navigator.mediaDevices.getUserMedia({ video:{frameRate:15} , audio: true});
       videoRef.current.srcObject = stream;
-      mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: 'video/webm; codecs=vp8,opus', bitsPerSecond: 500000 });
+      const browserName = userAgentName();
+      const recordingFormat = browserName == 'Apple Safari' ? 'video/mp4;codecs=avc1,mp4a' : 'video/webm;codecs=vp8,opus';
+      console.log(browserName,recordingFormat)
+      mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: recordingFormat, bitsPerSecond: 500000 });
 
       mediaRecorderRef.current.ondataavailable = (event) => {
         if (event.data.size > 0) {
